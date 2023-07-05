@@ -155,4 +155,5 @@ cython_debug/
 temp/*
 used/*
 output/*
+assets/*
 config.ini
