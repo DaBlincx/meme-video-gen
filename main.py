@@ -8,6 +8,7 @@ import configparser
 import yt_dlp
 import shutil
 from playwright.sync_api import sync_playwright
+import random
 
 config = configparser.ConfigParser()
 try:
@@ -25,14 +26,22 @@ outputDir = config['General']['OutputDir']
 tempDir = config['General']['TempDir']
 usedDir = config['General']['UsedDir']
 maxdw = int(config['General']['MaxDownloads'])
+videoLength = int(config['Video']['Length'])
+videoLengthInMinutes = config['Video']['LengthInMinutes']
+if videoLengthInMinutes == "True": videoLength *= 60
 videoHeight = int(config['Video']['Height'])
 videoWidth = int(config['Video']['Width'])
 videoFps = int(config['Video']['FPS'])
 videoBitrate = config['Video']['Bitrate']
+videoCodec = config['Video']['Codec']
 renderThreads = int(config['Video']['Threads'])
+watermark = config['Other']['Watermark']
+titles = config['Other']['Titles']
+usedTitles = config['Other']['UsedTitles']
 
 def get_shitpost() -> str:
     with sync_playwright() as playwright:
+        print("Getting shitpost")
         browser = playwright.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
@@ -40,40 +49,33 @@ def get_shitpost() -> str:
         # page.get_by_role("button", name="Play Videos").click()
         # wait for the page to load and redirect using playwright
         page.wait_for_url("https://shitpoststatus.com/watch?v=*")
-
         # get current page url
         youtubelink = "https://youtube.com/" + page.url.split("/")[-1]
         page.close()
         context.close()
         browser.close()
+        print(f"Got {youtubelink}")
         return youtubelink
 
-def downloadVideo(dwdir):
+def downloadVideo(dwdir: str):
     link = get_shitpost()
     print(f"Downloading {link}")
     os.chdir(dwdir)
-    ydl_opts = {
-        'download_archive': 'archive.txt',
-        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-        'outtmpl': '%(title)s [%(id)s].%(ext)s'
-    }
+    ydl_opts = {'download_archive': 'archive.txt','format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best','outtmpl': '%(title)s [%(id)s].%(ext)s'}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(link, download=True)
         try: filename = ydl.prepare_filename(info_dict)
         except: filename = None
         ydl.download([link])
-
     os.chdir("..")
     return filename
 
 def createMemeClip(file: str):
     memepath = os.path.join(tempDir, file)
     clip = moviepy.editor.VideoFileClip(memepath)
-    currentheight = clip.size[1]
     currentwidth = clip.size[0]
     print(f"Creating clip of {file} {clip.size}")
-    if currentheight > videoHeight:
-        clip = moviepy.video.fx.resize.resize(clip, height=videoHeight)
+    clip = moviepy.video.fx.resize.resize(clip, height=videoHeight)
     if currentwidth > videoWidth:
         clip = moviepy.video.fx.resize.resize(clip, width=videoWidth)
     print(f"New size: {clip.size}")
@@ -84,44 +86,120 @@ def createMemeClip(file: str):
     #os.rename(memepath, os.path.join(f"{tempDir}/used", file))
     return clip
 
-def createVideo():
+def makeWatermark(duration: int):
+    """
+    will return an image clip consistion of the watermark image that is as long as duration
+    """
+    print("Creating watermark")
+    watermarkclip = moviepy.editor.ImageClip(watermark).set_duration(duration)
+    watermarkclip = watermarkclip.resize(height=videoHeight)
+    if watermarkclip.size[0] > videoWidth:
+        watermarkclip = moviepy.video.fx.resize.resize(watermarkclip, width=videoWidth)
+    watermarkclip = watermarkclip.set_position(("center", "center"))
+    return watermarkclip
 
+def writeUsedTitles(title: str):
+    try:
+        with open(usedTitles, "a") as f:
+            f.write(title + "\n")
+    except FileNotFoundError:
+        with open(usedTitles, "w") as f:
+            f.write(title + "\n")
+
+def getDefaultFilename():
+    return f"output_{time.strftime('%Y-%m-%d_%H-%M-%S')}.mp4"
+
+def formatCustomFilename(title: str):
+    formatted = f"{title}.mp4".encode("utf-8", "ignore").decode()
+    for char in ["\\", "/", ":", "*", "?", "\"", "<", ">", "|"]:
+        formatted = formatted.replace(char, "")
+    return getDefaultFilename() if formatted == "" else formatted
+
+def getOutputFilename():
+    if not titles:
+        return getDefaultFilename()
+    with open(titles, "r") as f:
+        titlesfile = f.readlines()
+    if titlesfile:
+        title = random.choice(titlesfile).strip()
+        titlesfile.remove(title)
+        if usedTitles: writeUsedTitles(title)
+        with open(titles, "w") as f:
+            f.writelines(titlesfile)
+        return formatCustomFilename(title)
+    else:
+        return getDefaultFilename()
+
+
+def tryMakeDirs():
     with contextlib.suppress(FileExistsError):
         os.mkdir(outputDir)
     with contextlib.suppress(FileExistsError):
         os.mkdir(tempDir)
+    with contextlib.suppress(FileExistsError):
+        os.mkdir(usedDir)
 
+def checkForExistingClips():
     clips = []
     usedfiles = []
-
-    file = downloadVideo(tempDir)
-    if file not in usedfiles:
-        clips.append(createMemeClip(file))
-        usedfiles.append(file)
-
-    content_clip = moviepy.editor.concatenate_videoclips(clips)
-    content_clip.set_position(("center", "center"))
-    while content_clip.duration < 600:
-        file = downloadVideo(tempDir)
-        if file not in usedfiles and not None:
+    alreadyexisting = os.listdir(tempDir)
+    random.shuffle(alreadyexisting)
+    for file in alreadyexisting:
+        if file.endswith(".mp4"):
             clips.append(createMemeClip(file))
             usedfiles.append(file)
-        content_clip = moviepy.editor.concatenate_videoclips(clips)
-        content_clip.set_position(("center", "center"))
+            durationsum = sum(clip.duration for clip in clips)
+            if durationsum >= videoLength:
+                break
+    return clips, usedfiles
 
-    background_clip = moviepy.editor.ColorClip(size=(videoWidth, videoHeight), color=[0,0,0], duration=content_clip.duration)
+def refreshContentClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.editor.VideoClip, clips: list[moviepy.editor.VideoClip], usedfiles: list[str]):
+    while content_clip.duration < videoLength:
+        file = downloadVideo(tempDir)
+        if file not in usedfiles and type(file) == str:
+            clips.append(createMemeClip(file))
+            usedfiles.append(file)
+        content_clip = moviepy.editor.concatenate_videoclips(clips).set_position(("center", "center"))
+    return content_clip, usedfiles
 
-    final_clip = moviepy.editor.CompositeVideoClip([background_clip, content_clip], size=(videoWidth, videoHeight), bg_color=[0,0,0])
+def createContentClip():
+    clips, usedfiles = checkForExistingClips()
 
+    if not clips:
+        file = downloadVideo(tempDir)
+        if file not in usedfiles:
+            clips.append(createMemeClip(file))
+            usedfiles.append(file)
+    content_clip = moviepy.editor.concatenate_videoclips(clips).set_position(("center", "center"))
+
+    content_clip, usedfiles = refreshContentClip(content_clip, clips, usedfiles)
+
+    return content_clip, usedfiles
+
+def createFinalClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.editor.VideoClip, background_clip: moviepy.editor.VideoClip):
+    if watermark:
+        final_clip = moviepy.editor.CompositeVideoClip([background_clip, content_clip, makeWatermark(content_clip.duration)], size=(videoWidth, videoHeight), bg_color=[0,0,0])
+    else:
+        final_clip = moviepy.editor.CompositeVideoClip([background_clip, content_clip], size=(videoWidth, videoHeight), bg_color=[0,0,0])
     final_clip.set_fps(videoFps)
     final_clip.set_duration(final_clip.duration)
+    return final_clip
 
-    outputFileName = f"output_{time.strftime('%Y%m%d-%H%M%S')}.mp4"
+def createClips():
+    content_clip, usedfiles = createContentClip()
+    background_clip = moviepy.editor.ColorClip(size=(videoWidth, videoHeight), color=[0,0,0], duration=content_clip.duration)
+    final_clip = createFinalClip(content_clip, background_clip)
+    outputFileName = getOutputFilename()
+    return final_clip, outputFileName, usedfiles
 
-    final_clip.write_videofile(os.path.join(outputDir, outputFileName), fps=videoFps, bitrate=videoBitrate, threads=renderThreads, preset="ultrafast", audio_codec="aac", temp_audiofile="temp-audio.m4a", remove_temp=True, codec="libx264", audio_bitrate="128k")
+def writeVideo(final_clip: moviepy.editor.CompositeVideoClip, outputFileName: str):
+    final_clip.write_videofile(os.path.join(outputDir, outputFileName), fps=videoFps, bitrate=videoBitrate, threads=renderThreads, preset="ultrafast", audio_codec="aac", temp_audiofile="temp-audio.m4a", remove_temp=True, codec=videoCodec, audio_bitrate="128k", )
 
-    for file in usedfiles:
-        shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
+def createVideo():
+    tryMakeDirs()
+    final_clip, outputFileName, usedfiles = createClips()
+    writeVideo(final_clip, outputFileName)
+    for file in usedfiles: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
 
 def main():
     createVideo()
