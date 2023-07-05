@@ -140,17 +140,14 @@ def tryMakeDirs():
         os.mkdir(usedDir)
 
 def checkForExistingClips():
-    clips = []
-    usedfiles = []
+    clips, usedfiles = [], []
     alreadyexisting = os.listdir(tempDir)
     random.shuffle(alreadyexisting)
     for file in alreadyexisting:
         if file.endswith(".mp4"):
             clips.append(createMemeClip(file))
             usedfiles.append(file)
-            durationsum = sum(clip.duration for clip in clips)
-            if durationsum >= videoLength:
-                break
+            if sum(clip.duration for clip in clips) >= videoLength: break
     return clips, usedfiles
 
 def refreshContentClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.editor.VideoClip, clips: list[moviepy.editor.VideoClip], usedfiles: list[str]):
@@ -172,15 +169,14 @@ def createContentClip():
             usedfiles.append(file)
     content_clip = moviepy.editor.concatenate_videoclips(clips).set_position(("center", "center"))
 
-    content_clip, usedfiles = refreshContentClip(content_clip, clips, usedfiles)
+    return refreshContentClip(content_clip, clips, usedfiles)
 
-    return content_clip, usedfiles
+def createPossibleWatermarkedClip(clips: list[moviepy.editor.VideoClip | moviepy.editor.CompositeVideoClip | moviepy.editor.ImageClip]):
+    return moviepy.editor.CompositeVideoClip(clips, size=(videoWidth, videoHeight), bg_color=[0,0,0])
 
 def createFinalClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.editor.VideoClip, background_clip: moviepy.editor.VideoClip):
-    if watermark:
-        final_clip = moviepy.editor.CompositeVideoClip([background_clip, content_clip, makeWatermark(content_clip.duration)], size=(videoWidth, videoHeight), bg_color=[0,0,0])
-    else:
-        final_clip = moviepy.editor.CompositeVideoClip([background_clip, content_clip], size=(videoWidth, videoHeight), bg_color=[0,0,0])
+    if watermark: final_clip = createPossibleWatermarkedClip([background_clip, content_clip, makeWatermark(content_clip.duration)])
+    else: final_clip = createPossibleWatermarkedClip([background_clip, content_clip])
     final_clip.set_fps(videoFps)
     final_clip.set_duration(final_clip.duration)
     return final_clip
@@ -188,9 +184,7 @@ def createFinalClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.ed
 def createClips():
     content_clip, usedfiles = createContentClip()
     background_clip = moviepy.editor.ColorClip(size=(videoWidth, videoHeight), color=[0,0,0], duration=content_clip.duration)
-    final_clip = createFinalClip(content_clip, background_clip)
-    outputFileName = getOutputFilename()
-    return final_clip, outputFileName, usedfiles
+    return createFinalClip(content_clip, background_clip), getOutputFilename(), usedfiles
 
 def writeVideo(final_clip: moviepy.editor.CompositeVideoClip, outputFileName: str):
     final_clip.write_videofile(os.path.join(outputDir, outputFileName), fps=videoFps, bitrate=videoBitrate, threads=renderThreads, preset="ultrafast", audio_codec="aac", temp_audiofile="temp-audio.m4a", remove_temp=True, codec=videoCodec, audio_bitrate="128k", )
@@ -201,16 +195,5 @@ def createVideo():
     writeVideo(final_clip, outputFileName)
     for file in usedfiles: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
 
-def main():
-    createVideo()
-
 if __name__ == "__main__":
-    main()
-
-
-
-
-
-
-
-
+    createVideo()
