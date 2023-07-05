@@ -1,0 +1,4 @@
+moviepy
+playwright
+yt-dlp
+ffmpeg-python
