@@ -18,7 +18,7 @@ The script will move the used videos to the used directory.
 
 Maybe I'll add an option to delete them instead in the future.
 
-Also, the script will not download videos that have already been downloaded. This is to avoid duplication. Delete archive.txt in the General>TempDir folder if you want to possibly download videos that have already been downloaded.
+Also, the script will not download videos that have already been downloaded. This is to avoid duplication. Delete archive.txt in the General>TempDir folder (see config.ini) if you want to possibly download videos that have already been downloaded.
 
 
 ## Configuration
