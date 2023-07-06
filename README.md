@@ -92,7 +92,7 @@ Contributions to this project are welcome! If you have any suggestions, improvem
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE). Feel free to use and modify the code according to your needs.
+This project is licensed under the [MIT License](LICENSE).
 
 ## Disclaimer
 
