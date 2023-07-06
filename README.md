@@ -12,6 +12,14 @@ The codec is set to libx264 by default. MoviePy does not support GPU acceleratio
 
 You can also change the number of rendering threads in the configuration file to speed up the process.
 
+### Used Videos
+
+The script will move the used videos to the used directory. 
+
+Maybe I'll add an option to delete them instead in the future.
+
+Also, the script will not download videos that have already been downloaded. This is to avoid duplication. Delete archive.txt in the General>TempDir folder if you want to possibly download videos that have already been downloaded.
+
 
 ## Configuration
 
