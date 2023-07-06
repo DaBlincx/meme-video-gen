@@ -1,4 +1,4 @@
-# Shitpost Compilation Generator
+# Meme/Shitpost Compilation Generator
 
 This project is a Python script that generates shitpost videos by downloading random videos from shitpoststatus.com and combining them into a single video clip. The script utilizes various libraries, including MoviePy for video editing, yt-dlp for downloading YouTube videos, and Playwright for web scraping.
 
