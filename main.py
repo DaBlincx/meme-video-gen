@@ -40,6 +40,7 @@ titles = config['Other']['Titles']
 usedTitles = config['Other']['UsedTitles']
 
 def get_shitpost() -> str:
+    # this is definitely a very efficient design and you should definitely not use a better method smh my head
     with sync_playwright() as playwright:
         print("Getting shitpost")
         browser = playwright.chromium.launch(headless=True)
@@ -113,7 +114,7 @@ def formatCustomFilename(title: str):
     formatted = f"{title}.mp4".encode("utf-8", "ignore").decode()
     for char in ["\\", "/", ":", "*", "?", "\"", "<", ">", "|"]:
         formatted = formatted.replace(char, "")
-    return getDefaultFilename() if formatted == "" else formatted
+    return getDefaultFilename() if formatted == ".mp4" else formatted
 
 def getOutputFilename():
     if not titles:
@@ -121,12 +122,12 @@ def getOutputFilename():
     with open(titles, "r") as f:
         titlesfile = f.readlines()
     if titlesfile:
-        title = random.choice(titlesfile).strip()
+        title = random.choice(titlesfile)
         titlesfile.remove(title)
-        if usedTitles: writeUsedTitles(title)
-        with open(titles, "w") as f:
+        if usedTitles: writeUsedTitles(title.strip())
+        with open(titles, "a") as f:
             f.writelines(titlesfile)
-        return formatCustomFilename(title)
+        return formatCustomFilename(title.strip())
     else:
         return getDefaultFilename()
 
@@ -147,7 +148,9 @@ def checkForExistingClips():
         if file.endswith(".mp4"):
             clips.append(createMemeClip(file))
             usedfiles.append(file)
-            if sum(clip.duration for clip in clips) >= videoLength: break
+            curlength = sum(clip.duration for clip in clips)
+            print(f"Length: {curlength:.2f}/{videoLength:.2f} seconds ({curlength/videoLength*100:.2f}%)")
+            if curlength >= videoLength: break
     return clips, usedfiles
 
 def refreshContentClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.editor.VideoClip, clips: list[moviepy.editor.VideoClip], usedfiles: list[str]):
@@ -156,6 +159,8 @@ def refreshContentClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy
         if file not in usedfiles and type(file) == str:
             clips.append(createMemeClip(file))
             usedfiles.append(file)
+            curlength = sum(clip.duration for clip in clips)
+            print(f"Length: {curlength:.2f}/{videoLength:.2f} seconds ({curlength/videoLength*100:.2f}%)")
         content_clip = moviepy.editor.concatenate_videoclips(clips).set_position(("center", "center"))
     return content_clip, usedfiles
 
@@ -178,7 +183,6 @@ def createFinalClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.ed
     if watermark: final_clip = createPossibleWatermarkedClip([background_clip, content_clip, makeWatermark(content_clip.duration)])
     else: final_clip = createPossibleWatermarkedClip([background_clip, content_clip])
     final_clip.set_fps(videoFps)
-    final_clip.set_duration(final_clip.duration)
     return final_clip
 
 def createClips():
