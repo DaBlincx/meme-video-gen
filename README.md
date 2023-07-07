@@ -2,24 +2,16 @@
 
 This project is a Python script that generates shitpost videos by downloading random videos from shitpoststatus.com and combining them into a single video clip. The script utilizes various libraries, including MoviePy for video editing, yt-dlp for downloading YouTube videos, and Playwright for web scraping.
 
-## Info
+## Table of Contents
 
-### Watermark
-There is a watermark image already included in the repository. If you do not want to use a watermark, you can remove the watermark image path from the configuration file.
-
-### Video Settings
-The codec is set to libx264 by default. MoviePy does not support GPU acceleration, so the encoding process will be slow. 
-
-You can also change the number of rendering threads in the configuration file to speed up the process.
-
-### Used Videos
-
-The script will move the used videos to the used directory. 
-
-Maybe I'll add an option to delete them instead in the future.
-
-Also, the script will not download videos that have already been downloaded. This is to avoid duplication. Delete archive.txt in the General>TempDir folder (see config.ini) if you want to possibly download videos that have already been downloaded.
-
+- [Configuration](#configuration)
+- [Dependencies](#dependencies)
+- [Usage](#usage)
+- [Other](#other)
+  - [Watermark](#watermark)
+  - [Video Settings](#video-settings)
+  - [Used Videos](#used-videos)
+- [FAQ](#faq)
 
 ## Configuration
 
@@ -42,6 +34,8 @@ Can be found in `config.ini` (config.example.ini if you just cloned the repo)
 | (Optional) Used titles file | A file to store used titles and avoid duplication.
 
 ## Dependencies
+
+I have not tested this script on any python version below 3.11.3, but it should work on >=3.9.
 
 The script relies on the following dependencies:
 
@@ -75,6 +69,24 @@ playwright install chromium
 5. Wait and drink some coffee or something you nerd
 
 The script will generate a random shitpost video based on the specified configuration.
+
+## Other
+
+### Watermark
+There is a watermark image already included in the repository. If you do not want to use a watermark, you can remove the watermark image path from the configuration file.
+
+### Video Settings
+The codec is set to libx264 by default. MoviePy does not support GPU acceleration, so the encoding process will be slow. 
+
+You can also change the number of rendering threads in the configuration file to speed up the process.
+
+### Used Videos
+
+The script will move the used videos to the used directory. 
+
+Maybe I'll add an option to delete them instead in the future.
+
+Also, the script will not download videos that have already been downloaded. This is to avoid duplication. Delete archive.txt in the General>TempDir folder (see config.ini) if you want to possibly download videos that have already been downloaded.
 
 ## FAQ
 
