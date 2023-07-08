@@ -2,6 +2,8 @@
 
 This project is a Python script that generates shitpost videos by downloading random videos from shitpoststatus.com and combining them into a single video clip. The script utilizes various libraries, including MoviePy for video editing, yt-dlp for downloading YouTube videos, and Playwright for web scraping.
 
+![saul](https://cdn.discordapp.com/emojis/1010754114390605844.webp?size=56) ![omg](https://cdn.discordapp.com/emojis/852418130315313162.gif)
+
 ## Table of Contents
 
 - [Configuration](#configuration)
@@ -116,4 +118,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Disclaimer
 
-Please note that this script is intended for educational and entertainment purposes only. Make sure to comply with the terms of service of the website from which you are downloading videos. The creator of this project is not responsible for any misuse or violation of any applicable laws or regulations.
+Please note that this script is intended for educational and entertainment purposes only. The creator of this project is not responsible for any misuse or violation of any applicable laws or regulations.
