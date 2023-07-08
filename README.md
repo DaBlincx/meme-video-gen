@@ -96,6 +96,10 @@ Also, the script will not download videos that have already been downloaded. Thi
 
 The script is slow because it has to download videos from the internet and render them using the CPU because MoviePy does not support GPU accelleration. You can speed up the process by increasing the number of rendering threads in the configuration file.
 
+### What about automatic uploads to YouTube?
+
+Maybe in the future. You can try to implement it yourself if you want and submit a pull request. ![thumbsup](https://cdn.discordapp.com/emojis/1044717814147199107.webp?size=16)
+
 ### Will you fix whatever happens when I set MaxDownloads to 0 or below?
 
 No.
