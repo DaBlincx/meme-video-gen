@@ -102,7 +102,9 @@ Maybe in the future. You can try to implement it yourself if you want and submit
 
 ### Why do you use playwright instead of using requests or something?
 
-I haven't tried following redirects using requests/urllib, so I just used playwright because it's easier.
+I haven't tried following redirects using requests/urllib, so I just used playwright because it's easier. 
+
+Also I just checked the website code and it seems like the video links are generated using JavaScript, so requests/urllib wouldn't work.
 
 ### Will you fix whatever happens when I set MaxDownloads to 0 or below?
 
