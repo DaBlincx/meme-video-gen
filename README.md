@@ -100,6 +100,10 @@ The script is slow because it has to download videos from the internet and rende
 
 Maybe in the future. You can try to implement it yourself if you want and submit a pull request. ![thumbsup](https://cdn.discordapp.com/emojis/1044717814147199107.webp?size=16)
 
+### Why do you use playwright instead of using requests or something?
+
+I haven't tried following redirects using requests/urllib, so I just used playwright because it's easier.
+
 ### Will you fix whatever happens when I set MaxDownloads to 0 or below?
 
 No.
