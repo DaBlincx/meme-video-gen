@@ -191,7 +191,18 @@ def createClips():
     return createFinalClip(content_clip, background_clip), getOutputFilename(), usedfiles
 
 def writeVideo(final_clip: moviepy.editor.CompositeVideoClip, outputFileName: str):
-    final_clip.write_videofile(os.path.join(outputDir, outputFileName), fps=videoFps, bitrate=videoBitrate, threads=renderThreads, preset="ultrafast", audio_codec="aac", temp_audiofile="temp-audio.m4a", remove_temp=True, codec=videoCodec, audio_bitrate="128k", )
+    final_clip.write_videofile(
+        os.path.join(outputDir, outputFileName), 
+        fps=videoFps, 
+        bitrate=videoBitrate, 
+        threads=renderThreads, 
+        preset="ultrafast", 
+        audio_codec="aac", 
+        temp_audiofile="temp-audio.m4a", 
+        remove_temp=True, 
+        codec=videoCodec, 
+        audio_bitrate="128k"
+    )
 
 def createVideo():
     tryMakeDirs()
