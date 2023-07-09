@@ -33,6 +33,7 @@ videoHeight = int(config['Video']['Height'])
 videoWidth = int(config['Video']['Width'])
 videoFps = int(config['Video']['FPS'])
 videoBitrate = config['Video']['Bitrate']
+audioBitrate = config['Video']['AudioBitrate']
 videoCodec = config['Video']['Codec']
 renderThreads = int(config['Video']['Threads'])
 watermark = config['Other']['Watermark']
@@ -201,7 +202,7 @@ def writeVideo(final_clip: moviepy.editor.CompositeVideoClip, outputFileName: st
         temp_audiofile="temp-audio.m4a", 
         remove_temp=True, 
         codec=videoCodec, 
-        audio_bitrate="128k"
+        audio_bitrate=audioBitrate
     )
 
 def createVideo():
