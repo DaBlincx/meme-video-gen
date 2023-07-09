@@ -148,7 +148,9 @@ def checkForExistingClips():
     random.shuffle(alreadyexisting)
     for file in alreadyexisting:
         if file.endswith(".mp4"):
-            clips.append(createMemeClip(file))
+            newclip = createMemeClip(file)
+            print(type(newclip))
+            clips.append(newclip)
             usedfiles.append(file)
             curlength = sum(clip.duration for clip in clips)
             print(f"Length: {curlength:.2f}/{videoLength:.2f} seconds ({curlength/videoLength*100:.2f}%)")
@@ -158,8 +160,13 @@ def checkForExistingClips():
 def refreshContentClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.editor.VideoClip, clips: list[moviepy.editor.VideoClip], usedfiles: list[str]):
     while content_clip.duration < videoLength:
         file = downloadVideo(tempDir)
+        while file is None:
+            print("Download failed, retrying")
+            file = downloadVideo(tempDir)
         if file not in usedfiles and type(file) == str:
-            clips.append(createMemeClip(file))
+            newclip = createMemeClip(file)
+            print(type(newclip))
+            clips.append(newclip)
             usedfiles.append(file)
             curlength = sum(clip.duration for clip in clips)
             print(f"Length: {curlength:.2f}/{videoLength:.2f} seconds ({curlength/videoLength*100:.2f}%)")
@@ -171,7 +178,7 @@ def createContentClip():
 
     if not clips:
         file = downloadVideo(tempDir)
-        if file not in usedfiles:
+        if file not in usedfiles and type(file) == str:
             clips.append(createMemeClip(file))
             usedfiles.append(file)
     content_clip = moviepy.editor.concatenate_videoclips(clips).set_position(("center", "center"))
