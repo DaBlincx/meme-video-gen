@@ -19,20 +19,20 @@ This project is a Python script that generates shitpost videos by downloading ra
 
 Can be found in `config.ini` (config.example.ini if you just cloned the repo)
 
-| Option | Description |
-| ------ | ----------- |
-| Output directory | The directory where the final video will be saved.
-| Temporary directory | The directory where downloaded videos are stored temporarily.
-| Used directory | The directory where used video files are moved.
-| Maximum downloads | The maximum number of videos to download.
-| Video length | The desired (minimum) length of the final video in seconds or minutes.
-| Video resolution | The width and height of the video in pixels.
-| Video frame rate | The frame rate of the video in frames per second.
-| Video bitrate | The bitrate of the video in kilobits per second.
-| Video codec | The video codec to use for encoding the final video.
+| Option                      | Description
+| ------                      | ------
+| Output directory            | The directory where the final video will be saved.
+| Temporary directory         | The directory where downloaded videos are stored temporarily.
+| Used directory              | The directory where used video files are moved.
+| Maximum downloads           | The maximum number of videos to download.
+| Video length                | The desired (minimum) length of the final video in seconds or minutes.
+| Video resolution            | The width and height of the video in pixels.
+| Video frame rate            | The frame rate of the video in frames per second.
+| Video bitrate               | The bitrate of the video in kilobits per second.
+| Video codec                 | The video codec to use for encoding the final video.
 | Number of rendering threads | The number of threads to use for video rendering.
-| (Optional) Watermark image | The path to the watermark image file.
-| (Optional) Titles file | A file containing custom titles for the final videos.
+| (Optional) Watermark image  | The path to the watermark image file.
+| (Optional) Titles file      | A file containing custom titles for the final videos.
 | (Optional) Used titles file | A file to store used titles and avoid duplication.
 
 ## Dependencies
@@ -60,6 +60,7 @@ playwright install chromium
 
 ## Usage
 
+0. Read this README.md file in its entirety.
 1. Clone the repository.
 2. Install the required dependencies using the commands mentioned above.
 3. Customize the configuration in the config.ini file.
@@ -82,9 +83,13 @@ The codec is set to libx264 by default. MoviePy does not support GPU acceleratio
 
 You can also change the number of rendering threads in the configuration file to speed up the process.
 
+### Custom Videos
+
+You can put custom videos in the General>TempDir folder (see config.ini) and the script will use them instead of downloading videos from the internet/only download the remaining videos needed to reach the target video length.
+
 ### Used Videos
 
-The script will move the used videos to the used directory. 
+The script will move the used videos to the used directory (if set). 
 
 Maybe I'll add an option to delete them instead in the future.
 
