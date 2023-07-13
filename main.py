@@ -217,7 +217,8 @@ def createVideo():
     tryMakeDirs()
     final_clip, outputFileName, usedfiles = createClips()
     writeVideo(final_clip, outputFileName)
-    for file in usedfiles: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
+    if usedDir: 
+        for file in usedfiles: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
 
 if __name__ == "__main__":
     createVideo()
