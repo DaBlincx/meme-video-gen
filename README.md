@@ -9,6 +9,8 @@ This project is a Python script that generates shitpost videos by downloading ra
 - [Configuration](#configuration)
 - [Dependencies](#dependencies)
 - [Usage](#usage)
+    - [Automatic Video Generation](#automatic-video-generation)
+    - [Video Downloading](#video-downloading)
 - [Other](#other)
   - [Watermark](#watermark)
   - [Video Settings](#video-settings)
@@ -60,6 +62,8 @@ playwright install chromium
 
 ## Usage
 
+### Automatic Video Generation
+
 0. Read this README.md file in its entirety.
 1. Clone the repository.
 2. Install the required dependencies using the commands mentioned above.
@@ -71,7 +75,15 @@ playwright install chromium
     ```
 5. Wait and drink some coffee or something you nerd
 
-The script will generate a random shitpost video based on the specified configuration.
+### Video Downloading
+
+If you just want to download shitposts, you can use the `video_downloader.py` script.
+
+For example, to download 25 videos from shitpoststatus.com into `./output`, do:
+```
+python video_downloader.py -n 25 -o ./output
+```
+This script itself only needs Playwright (with Chromium) and yt-dlp.
 
 ## Other
 
@@ -79,9 +91,9 @@ The script will generate a random shitpost video based on the specified configur
 There is a watermark image already included in the repository. If you do not want to use a watermark, you can remove the watermark image path from the configuration file.
 
 ### Video Settings
-The codec is set to libx264 by default. MoviePy does not support GPU acceleration, so the encoding process will be slow. 
+The codec is set to libx264 by default (this codec is supported by most major video players). 
 
-You can also change the number of rendering threads in the configuration file to speed up the process.
+MoviePy does not support GPU acceleration, so the encoding process will be slow. You can also change the number of rendering threads in the configuration file to speed up the process.
 
 ### Custom Videos
 
