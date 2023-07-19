@@ -170,6 +170,24 @@ def createClips():
     background_clip = moviepy.editor.ColorClip(size=(videoWidth, videoHeight), color=[0,0,0], duration=content_clip.duration)
     return createFinalClip(content_clip, background_clip), getOutputFilename(), usedfiles
 
+def removeLeftoverFiles(removelater: list[str]):
+    print("Moving leftover files to used folder")
+    for file in removelater:
+        try: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
+        except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
+        except FileExistsError:
+            try:
+                # rename to name (number).ext and increase that number if that file also already exists
+                i = 1
+                while True:
+                    newname = f"{os.path.splitext(file)[0]} ({i}){os.path.splitext(file)[1]}"
+                    try:
+                        shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, newname))
+                        break
+                    except FileExistsError:
+                        i += 1
+            except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
+
 def writeVideo(final_clip: moviepy.editor.CompositeVideoClip, outputFileName: str):
     final_clip.write_videofile(
         os.path.join(outputDir, outputFileName), 
@@ -192,7 +210,7 @@ def createVideo():
     if usedDir: 
         for file in usedfiles: 
             try: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
-            except PermissionError: removelater.append(file)
+            except (PermissionError, FileExistsError): removelater.append(file)
     return removelater
 
 if __name__ == "__main__":
@@ -212,8 +230,6 @@ if __name__ == "__main__":
     else:
         print("No videos to create because videoCount is 0 (lmao why would you do that ??)")
     if removelater:
-        print("Moving leftover files to used folder")
-        for file in removelater:
-            try: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
-            except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
+        removeLeftoverFiles(removelater)
+
 
