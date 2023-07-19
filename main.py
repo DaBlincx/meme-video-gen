@@ -188,18 +188,32 @@ def createVideo():
     tryMakeDirs()
     final_clip, outputFileName, usedfiles = createClips()
     writeVideo(final_clip, outputFileName)
+    removelater = []
     if usedDir: 
-        for file in usedfiles: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
+        for file in usedfiles: 
+            try: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
+            except PermissionError: removelater.append(file)
+    return removelater
 
 if __name__ == "__main__":
     print("Starting (this may take a while)")
+    removelater = []
     if videoAmount >= 1:
         for i in range(videoAmount):
-            createVideo()
+            removelater.extend(createVideo())
             print(f"Finsihed video {i+1}/{videoAmount}")
     elif videoAmount == -1:
         while True:
-            createVideo()
-            print("Starting new video")
+            try:
+                removelater.extend(createVideo())
+                print("Starting new video")
+            except KeyboardInterrupt:
+                break
     else:
         print("No videos to create because videoCount is 0 (lmao why would you do that ??)")
+    if removelater:
+        print("Moving leftover files to used folder")
+        for file in removelater:
+            try: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
+            except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
+
