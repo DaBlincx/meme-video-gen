@@ -5,10 +5,11 @@ import moviepy.editor
 import moviepy.video.fx.resize
 import time
 import configparser
-import yt_dlp
 import shutil
 from playwright.sync_api import sync_playwright
 import random
+
+import video_downloader as vd
 
 config = configparser.ConfigParser()
 try:
@@ -41,37 +42,7 @@ watermark = config['Other']['Watermark']
 titles = config['Other']['Titles']
 usedTitles = config['Other']['UsedTitles']
 
-def get_shitpost() -> str:
-    # this is definitely a very efficient design and you should definitely not use a better method smh my head
-    with sync_playwright() as playwright:
-        print("Getting shitpost")
-        browser = playwright.chromium.launch(headless=True)
-        context = browser.new_context()
-        page = context.new_page()
-        page.goto("https://shitpoststatus.com/watch")
-        # page.get_by_role("button", name="Play Videos").click()
-        # wait for the page to load and redirect using playwright
-        page.wait_for_url("https://shitpoststatus.com/watch?v=*")
-        # get current page url
-        youtubelink = "https://youtube.com/" + page.url.split("/")[-1]
-        page.close()
-        context.close()
-        browser.close()
-        print(f"Got {youtubelink}")
-        return youtubelink
 
-def downloadVideo(dwdir: str):
-    link = get_shitpost()
-    print(f"Downloading {link}")
-    os.chdir(dwdir)
-    ydl_opts = {'download_archive': 'archive.txt','format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best','outtmpl': '%(title)s [%(id)s].%(ext)s'}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(link, download=True)
-        try: filename = ydl.prepare_filename(info_dict)
-        except: filename = None
-        ydl.download([link])
-    os.chdir("..")
-    return filename
 
 def createMemeClip(file: str):
     memepath = os.path.join(tempDir, file)
@@ -159,10 +130,10 @@ def checkForExistingClips():
 
 def refreshContentClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy.editor.VideoClip, clips: list[moviepy.editor.VideoClip], usedfiles: list[str]):
     while content_clip.duration < videoLength:
-        file = downloadVideo(tempDir)
+        file = vd.downloadVideo(tempDir)
         while file is None:
             print("Download failed, retrying")
-            file = downloadVideo(tempDir)
+            file = vd.downloadVideo(tempDir)
         if file not in usedfiles and type(file) == str:
             newclip = createMemeClip(file)
             print(type(newclip))
@@ -177,7 +148,7 @@ def createContentClip():
     clips, usedfiles = checkForExistingClips()
 
     if not clips:
-        file = downloadVideo(tempDir)
+        file = vd.downloadVideo(tempDir)
         if file not in usedfiles and type(file) == str:
             clips.append(createMemeClip(file))
             usedfiles.append(file)
@@ -221,4 +192,5 @@ def createVideo():
         for file in usedfiles: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
 
 if __name__ == "__main__":
+    print("Starting (this may take a while)")
     createVideo()
