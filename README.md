@@ -15,6 +15,7 @@ This project is a Python script that generates shitpost videos by downloading ra
   - [Watermark](#watermark)
   - [Video Settings](#video-settings)
   - [Used Videos](#used-videos)
+- [TODO](#todo)
 - [FAQ](#faq)
 
 ## Configuration
@@ -51,13 +52,13 @@ The script relies on the following dependencies:
 
 You can install these dependencies using the requirements.txt file:
 
-```
+```sh
 pip install -r requirements.txt
 ```
 
 You will also have to install Chromium for Playwright to work:
 
-```
+```sh
 playwright install chromium
 ```
 
@@ -71,7 +72,7 @@ playwright install chromium
 3. Customize the configuration in the config.ini file.
 4. Run the script using Python:
 
-    ```
+    ```sh
     python script.py
     ```
 5. Wait and drink some coffee or something you nerd
@@ -81,7 +82,7 @@ playwright install chromium
 If you just want to download shitposts, you can use the `video_downloader.py` script.
 
 For example, to download 25 videos from shitpoststatus.com into `./output`, do:
-```
+```sh
 python video_downloader.py -n 25 -o ./output
 ```
 This script itself only needs Playwright (with Chromium) and yt-dlp.
@@ -107,6 +108,17 @@ The script will move the used videos to the used directory (if set).
 Maybe I'll add an option to delete them instead in the future.
 
 Also, the script will not download videos that have already been downloaded. This is to avoid duplication. Delete archive.txt in the General>TempDir folder (see config.ini) if you want to possibly download videos that have already been downloaded.
+
+## TODO
+
+- [ ] Custom Intro and Outro
+- [ ] asking-to-subscribe clip? (what is that called bro)
+- [ ] Review videos before rendering
+- [ ] Automatic uploads to YouTube
+- [ ] Add more video sources (reddit, instagram, etc.)
+- [ ] Maybe add a GUI (probably not, I'm too lazy tbh)
+
+If you have any suggestions, feel free to open an issue or submit a pull request.
 
 ## FAQ
 
@@ -146,4 +158,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Disclaimer
 
-Please note that this script is intended for educational and entertainment purposes only. The creator of this project is not responsible for any misuse or violation of any applicable laws or regulations.
+Please note that this script is intended for educational and entertainment purposes only. The creator of this project is not responsible for any misuse or violation of any applicable laws or regulations. Use at your own risk.
