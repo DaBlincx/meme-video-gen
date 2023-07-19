@@ -27,6 +27,7 @@ outputDir = config['General']['OutputDir']
 tempDir = config['General']['TempDir']
 usedDir = config['General']['UsedDir']
 maxdw = int(config['General']['MaxDownloads'])
+videoAmount = int(config['General']['VideoAmount'])
 videoLength = int(config['Video']['Length'])
 videoLengthInMinutes = config['Video']['LengthInMinutes']
 if videoLengthInMinutes == "True": videoLength *= 60
@@ -41,7 +42,6 @@ audioBitrate = config['Audio']['AudioBitrate']
 watermark = config['Other']['Watermark']
 titles = config['Other']['Titles']
 usedTitles = config['Other']['UsedTitles']
-
 
 
 def createMemeClip(file: str):
@@ -193,4 +193,13 @@ def createVideo():
 
 if __name__ == "__main__":
     print("Starting (this may take a while)")
-    createVideo()
+    if videoAmount >= 1:
+        for i in range(videoAmount):
+            createVideo()
+            print(f"Finsihed video {i+1}/{videoAmount}")
+    elif videoAmount == -1:
+        while True:
+            createVideo()
+            print("Starting new video")
+    else:
+        print("No videos to create because videoCount is 0 (lmao why would you do that ??)")

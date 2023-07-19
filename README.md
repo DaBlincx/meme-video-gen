@@ -27,6 +27,7 @@ Can be found in `config.ini` (config.example.ini if you just cloned the repo)
 | Temporary directory         | The directory where downloaded videos are stored temporarily.
 | Used directory              | The directory where used video files are moved.
 | Maximum downloads           | The maximum number of videos to download.
+| Video Amount                 | The amount of videos to create (for example: run the program only once but get 5 videos).
 | Video length                | The desired (minimum) length of the final video in seconds or minutes.
 | Video resolution            | The width and height of the video in pixels.
 | Video frame rate            | The frame rate of the video in frames per second.
