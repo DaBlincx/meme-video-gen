@@ -102,8 +102,9 @@ def getOutputFilename():
             f.writelines(titlesfile)
         return formatCustomFilename(title.strip())
     else:
-        return getDefaultFilename()
-
+        title = getDefaultFilename()
+        if usedTitles: writeUsedTitles(title)
+        return title
 
 def tryMakeDirs():
     with contextlib.suppress(FileExistsError):
