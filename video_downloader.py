@@ -11,10 +11,7 @@ def get_shitpost() -> str:
         context = browser.new_context()
         page = context.new_page()
         page.goto("https://shitpoststatus.com/watch")
-        # page.get_by_role("button", name="Play Videos").click()
-        # wait for the page to load and redirect using playwright
         page.wait_for_url("https://shitpoststatus.com/watch?v=*")
-        # get current page url
         youtubelink = "https://youtube.com/" + page.url.split("/")[-1]
         page.close()
         context.close()
@@ -49,7 +46,7 @@ def main():
             downloaded[i] = filename
             i += 1
     print(downloaded)
-    
+
 if __name__ == "__main__":
     print("Running video downloader manually...")
     main()

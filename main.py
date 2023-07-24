@@ -6,7 +6,6 @@ import moviepy.video.fx.resize
 import time
 import configparser
 import shutil
-from playwright.sync_api import sync_playwright
 import random
 
 import video_downloader as vd
@@ -56,14 +55,9 @@ def createMemeClip(file: str):
     clip.set_fps(videoFps)
     clip.set_position(("center", "center"))
     clip.audio.set_fps(videoFps)
-    # move meme to used
-    #os.rename(memepath, os.path.join(f"{tempDir}/used", file))
     return clip
 
 def makeWatermark(duration: int):
-    """
-    will return an image clip consistion of the watermark image that is as long as duration
-    """
     print("Creating watermark")
     watermarkclip = moviepy.editor.ImageClip(watermark).set_duration(duration)
     watermarkclip = watermarkclip.resize(height=videoHeight)
@@ -147,14 +141,12 @@ def refreshContentClip(content_clip: moviepy.editor.CompositeVideoClip | moviepy
 
 def createContentClip():
     clips, usedfiles = checkForExistingClips()
-
     if not clips:
         file = vd.downloadVideo(tempDir)
         if file not in usedfiles and type(file) == str:
             clips.append(createMemeClip(file))
             usedfiles.append(file)
     content_clip = moviepy.editor.concatenate_videoclips(clips).set_position(("center", "center"))
-
     return refreshContentClip(content_clip, clips, usedfiles)
 
 def createPossibleWatermarkedClip(clips: list[moviepy.editor.VideoClip | moviepy.editor.CompositeVideoClip | moviepy.editor.ImageClip]):
@@ -178,7 +170,6 @@ def removeLeftoverFiles(removelater: list[str]):
         except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
         except FileExistsError:
             try:
-                # rename to name (number).ext and increase that number if that file also already exists
                 i = 1
                 while True:
                     newname = f"{os.path.splitext(file)[0]} ({i}){os.path.splitext(file)[1]}"
@@ -232,5 +223,3 @@ if __name__ == "__main__":
         print("No videos to create because videoCount is 0 (lmao why would you do that ??)")
     if removelater:
         removeLeftoverFiles(removelater)
-
-
