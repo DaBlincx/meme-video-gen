@@ -113,7 +113,10 @@ def checkForExistingClips():
     random.shuffle(alreadyexisting)
     for file in alreadyexisting:
         if file.endswith(".mp4"):
-            newclip = createMemeClip(file)
+            try:
+                newclip = createMemeClip(file)
+            except Exception:
+                continue
             print(type(newclip))
             clips.append(newclip)
             usedfiles.append(file)
@@ -211,10 +214,16 @@ if __name__ == "__main__":
         for i in range(videoAmount):
             removelater.extend(createVideo())
             print(f"Finsihed video {i+1}/{videoAmount}")
+            if removelater:
+                removeLeftoverFiles(removelater)
+                removelater = []
     elif videoAmount == -1:
         while True:
             try:
                 removelater.extend(createVideo())
+                if removelater:
+                    removeLeftoverFiles(removelater)
+                    removelater = []
                 print("Starting new video")
             except KeyboardInterrupt:
                 break
