@@ -25,7 +25,6 @@ except Exception:
 outputDir = config['General']['OutputDir']
 tempDir = config['General']['TempDir']
 usedDir = config['General']['UsedDir']
-maxdw = int(config['General']['MaxDownloads'])
 videoAmount = int(config['General']['VideoAmount'])
 videoLength = int(config['Video']['Length'])
 videoLengthInMinutes = config['Video']['LengthInMinutes']

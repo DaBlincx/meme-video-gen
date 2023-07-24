@@ -27,8 +27,7 @@ Can be found in `config.ini` (config.example.ini if you just cloned the repo)
 | Output directory            | The directory where the final video will be saved.
 | Temporary directory         | The directory where downloaded videos are stored temporarily.
 | Used directory              | The directory where used video files are moved.
-| Maximum downloads           | The maximum number of videos to download.
-| Video Amount                 | The amount of videos to create (for example: run the program only once but get 5 videos).
+| Video Amount                | The amount of videos to create (for example: run the program only once but get 5 videos).
 | Video length                | The desired (minimum) length of the final video in seconds or minutes.
 | Video resolution            | The width and height of the video in pixels.
 | Video frame rate            | The frame rate of the video in frames per second.
@@ -135,10 +134,6 @@ Maybe in the future. You can try to implement it yourself if you want and submit
 I haven't tried following redirects using requests/urllib, so I just used playwright because it's easier. 
 
 Also I just checked the website code and it seems like the video links are generated using JavaScript, so requests/urllib wouldn't work.
-
-### Will you fix whatever happens when I set MaxDownloads to 0 or below?
-
-No.
 
 ### Why is the script so bad?
 
