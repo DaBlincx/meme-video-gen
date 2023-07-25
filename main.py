@@ -168,8 +168,11 @@ def createClips():
 def removeLeftoverFiles(removelater: list[str]):
     print("Moving leftover files to used folder")
     for file in removelater:
-        try: shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
-        except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
+        try: 
+            shutil.move(os.path.join(tempDir, file), os.path.join(usedDir, file))
+            removelater.remove(file)
+        except PermissionError as e: 
+            print(f"Failed to move {file} to used folder (do it manually): {e}")
         except FileExistsError:
             try:
                 i = 1
@@ -180,7 +183,12 @@ def removeLeftoverFiles(removelater: list[str]):
                         break
                     except FileExistsError:
                         i += 1
+                removelater.remove(file)
             except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
+        except:
+            print(f"Failed to move {file} to used folder (will try again later)")
+            continue
+    return removelater
 
 def writeVideo(final_clip: moviepy.editor.CompositeVideoClip, outputFileName: str):
     final_clip.write_videofile(
@@ -215,19 +223,20 @@ if __name__ == "__main__":
             removelater.extend(createVideo())
             print(f"Finsihed video {i+1}/{videoAmount}")
             if removelater:
-                removeLeftoverFiles(removelater)
-                removelater = []
+                removelater = removeLeftoverFiles(removelater)
     elif videoAmount == -1:
         while True:
             try:
                 removelater.extend(createVideo())
                 if removelater:
-                    removeLeftoverFiles(removelater)
-                    removelater = []
+                    removelater = removeLeftoverFiles(removelater)
                 print("Starting new video")
             except KeyboardInterrupt:
                 break
     else:
         print("No videos to create because videoCount is 0 (lmao why would you do that ??)")
     if removelater:
-        removeLeftoverFiles(removelater)
+        removelater = removeLeftoverFiles(removelater)
+    if removelater:
+        print("Some files could not be moved to used folder, move them manually")
+        print(', '.join(removelater))
