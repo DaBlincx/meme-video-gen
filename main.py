@@ -185,7 +185,7 @@ def removeLeftoverFiles(removelater: list[str]):
                         i += 1
                 removelater.remove(file)
             except PermissionError as e: print(f"Failed to move {file} to used folder (do it manually): {e}")
-        except:
+        except Exception:
             print(f"Failed to move {file} to used folder (will try again later)")
             continue
     return removelater
